@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>input form </title>
+    </head>
+    <body>
+        <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student Form</title>
+   <style>
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0 15px;
+    background-color: #A7E399;
+}
+
+#Box1 {
+    border: 3px solid rebeccapurple;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    color: black;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: skyblue;
+    border-radius: 8px;
+}
+
+hr {
+    margin: 25px 0;
+}
+
+ul {
+    padding-left: 20px;
+}
+</style>
+</head>
+<body>
+
+<div id="Box1">
+    <h1>Student Form</h1>
+    <form id="studentForm">
+        <label for="name">Enter Name:</label><br>
+        <input type="text" id="name" name="name" placeholder="Enter First Name" required>
+        <br><br>
+
+        <label for="marks">Enter Marks:</label><br>
+        <input type="number" id="marks" name="marks" placeholder="Enter Marks" min="0" max="100" required>
+        <br><br>
+
+        <p>Gender:</p>
+        <input type="radio" id="male" name="gender" value="male" required>
+        <label for="male">Male</label>
+        <input type="radio" id="female" name="gender" value="female">
+        <label for="female">Female</label>
+        <br><br>
+
+        <button type="submit">Add Student</button>
+    </form>
+
+    <hr>
+
+    <div id="output">
+        <button>Student List </button>
+        <ul id="studentList"></ul>
+
+        <h3>Passed Students</h3>
+        <ul id="passedList"></ul>
+
+        <p><strong>Average Marks:</strong> <span id="averageMarks">0</span></p>
+        <p><strong>Topper:</strong> <span id="topper">N/A</span></p>
+    </div>
+</div>
+
+<script>
+    // Empty array to hold student objects
+    let students = [];
+
+    // Add student to array
+    function addStudent(name, marks) {
+        students.push({ name, marks });
+    }
+
+    // Display all students in the list
+    function displayAllStudents() {
+        const list = document.getElementById('studentList');
+        list.innerHTML = '';
+        students.forEach(student => {
+            const li = document.createElement('li');
+            li.textContent = `${student.name} - ${student.marks} marks`;
+            list.appendChild(li);
+        });
+    }
+
+    // Get students who passed (marks >= 40)
+    function getPassedStudents() {
+        return students.filter(student => student.marks >= 40);
+    }
+
+    // Calculate average marks
+    function getAverageMarks() {
+        if (students.length === 0) return 0;
+        const total = students.reduce((sum, student) => sum + student.marks, 0);
+        return (total / students.length).toFixed(2);
+    }
+
+    // Find the topper student
+    function findTopper() {
+        if (students.length === 0) return null;
+        let topper = students[0];
+        for (let i = 1; i < students.length; i++) {
+            if (students[i].marks > topper.marks) {
+                topper = students[i];
+            }
+        }
+        return topper;
+    }
+
+    // Callback example: display passed students in DOM
+    function afterFilter(callback) {
+        const passed = getPassedStudents();
+        callback(passed);
+    }
+
+    function displayPassed(passedStudents) {
+        const list = document.getElementById('passedList');
+        list.innerHTML = '';
+        passedStudents.forEach(student => {
+            const li = document.createElement('li');
+            li.textContent = `${student.name} - ${student.marks} marks`;
+            list.appendChild(li);
+        });
+    }
+
+    // Form submission handler
+    document.getElementById('studentForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const name = document.getElementById('name').value.trim();
+        const marks = parseFloat(document.getElementById('marks').value);
+
+        if (isNaN(marks) || marks < 0 || marks > 100) {
+            alert("Please enter valid marks between 0 and 100.");
+            return;
+        }
+
+        addStudent(name, marks);
+
+        // Update all displays
+        displayAllStudents();
+        afterFilter(displayPassed);
+        document.getElementById('averageMarks').textContent = getAverageMarks();
+
+        const topper = findTopper();
+        document.getElementById('topper').textContent = topper 
+            ? `${topper.name} - ${topper.marks} marks` 
+            : 'N/A';
+
+        this.reset();
+    });
+</script>
+</body>
+</html>
